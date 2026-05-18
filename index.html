@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireNames - Lobby em Tempo Real</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+
+    <div id="login-screen" class="flex-1 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            <div class="text-center mb-6">
+                <h1
+                    class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-400">
+                    FireNames</h1>
+                <p class="text-slate-400 text-sm mt-1">Conecte-se para entrar no lobby</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Seu
+                        Nome</label>
+                    <input type="text" id="player-name" placeholder="Ex: Carlos"
+                        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <button id="btn-login"
+                    class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95">
+                    Entrar no Lobby
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lobby-screen" class="hidden flex-1 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-3xl">
+            <div
+                class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold">Lobby do Jogo</h2>
+                    <p class="text-sm text-slate-400">Escolha seu lado e aguarde o início da partida</p>
+                </div>
+                <button id="btn-start-game"
+                    class="mt-4 md:mt-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all active:scale-95">
+                    <i class="fa-solid fa-play mr-2"></i>Começar Partida
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Escolha seu Time:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-team-blue"
+                            class="py-2 rounded-lg font-bold border-2 border-transparent bg-blue-600 text-white shadow-lg">Azul</button>
+                        <button id="btn-team-red"
+                            class="py-2 rounded-lg font-bold border-2 border-transparent bg-slate-800 text-slate-400">Vermelho</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Escolha seu Cargo:</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-role-player"
+                            class="py-2 rounded-lg font-bold border-2 border-transparent bg-indigo-600 text-white shadow-lg">Jogador</button>
+                        <button id="btn-role-spy"
+                            class="py-2 rounded-lg font-bold border-2 border-transparent bg-slate-800 text-slate-400">Líder
+                            (Espião)</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-blue-950/20 border border-blue-900/50 rounded-xl p-4">
+                    <h3
+                        class="text-blue-400 font-bold uppercase tracking-wider border-b border-blue-900 pb-2 mb-3 flex justify-between">
+                        <span>🔵 Time Azul</span>
+                        <span id="count-blue" class="text-xs text-slate-400 font-normal">0 jogadores</span>
+                    </h3>
+                    <ul id="list-blue" class="space-y-2 text-sm min-h-[100px]">
+                    </ul>
+                </div>
+
+                <div class="bg-red-950/20 border border-red-900/50 rounded-xl p-4">
+                    <h3
+                        class="text-red-400 font-bold uppercase tracking-wider border-b border-red-900 pb-2 mb-3 flex justify-between">
+                        <span>🔴 Time Vermelho</span>
+                        <span id="count-red" class="text-xs text-slate-400 font-normal">0 jogadores</span>
+                    </h3>
+                    <ul id="list-red" class="space-y-2 text-sm min-h-[100px]">
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-screen" class="hidden flex-1 flex flex-col md:flex-row h-screen">
+        <aside
+            class="w-full md:w-80 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-800 p-6 flex flex-col justify-between space-y-6">
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <span class="text-sm text-slate-400">Você é: <strong id="display-role"
+                            class="text-white">-</strong></span>
+                    <button id="btn-back-lobby"
+                        class="bg-slate-800 hover:bg-slate-700 border border-slate-700 p-2 rounded-lg text-xs transition-all">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Voltar pro Lobby
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 text-center mb-6">
+                    <div class="bg-blue-950/40 border border-blue-800 p-3 rounded-xl">
+                        <p class="text-xs text-blue-400 font-bold uppercase">Time Azul</p>
+                        <p id="score-blue" class="text-2xl font-black text-blue-300">0</p>
+                    </div>
+                    <div class="bg-red-950/40 border border-red-800 p-3 rounded-xl">
+                        <p class="text-xs text-red-400 font-bold uppercase">Time Vermelho</p>
+                        <p id="score-red" class="text-2xl font-black text-red-300">0</p>
+                    </div>
+                </div>
+
+                <div id="clue-section" class="bg-slate-800/50 border border-slate-700/50 p-4 rounded-xl space-y-3">
+                    <p class="text-xs font-bold text-amber-400 uppercase flex items-center">
+                        <i class="fa-solid fa-bullhorn mr-1.5"></i> Painel de Dicas
+                    </p>
+                    <div id="clue-display"
+                        class="text-sm bg-slate-950 p-3 rounded-lg text-center font-mono text-slate-300 italic">
+                        Aguardando dica...
+                    </div>
+                    <form id="clue-form" class="hidden space-y-2">
+                        <input type="text" id="input-clue-word" placeholder="Dica (uma palavra)"
+                            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs" required>
+                        <input type="number" id="input-clue-num" placeholder="Quantidade" min="1" max="16"
+                            class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs" required>
+                        <button type="submit"
+                            class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 rounded-lg text-xs">Enviar
+                            Dica</button>
+                    </form>
+                </div>
+            </div>
+            <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-4">
+                Clique nas cartas do seu time baseado na dica do seu Líder!
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-10 flex items-center justify-center">
+            <div id="board" class="grid grid-cols-4 gap-4 w-full max-w-3xl aspect-square"></div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2U6ysQL0Y3TVj50JFG7J4ievzcJ66Vko",
+            authDomain: "lab-4c38d.firebaseapp.com",
+            databaseURL: "https://lab-4c38d-default-rtdb.firebaseio.com",
+            projectId: "lab-4c38d",
+            storageBucket: "lab-4c38d.firebasestorage.app",
+            messagingSenderId: "655341944007",
+            appId: "1:655341944007:web:5665a32f30e36823fe52e2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Nós de Referência
+        const lobbyPlayersRef = ref(db, 'lobby/players');
+        const gameStatusRef = ref(db, 'game_state/status');
+        const gameStateRef = ref(db, 'game_state');
+
+        const listaPalavras = [
+            "Avião", "Fogo", "Cachorro", "Banco", "Gato", "Castelo", "Maçã", "Ouro",
+            "Espada", "Planeta", "Chocolate", "Cavalo", "Inverno", "Papel", "Navio", "Computador",
+            "Rato", "Floresta", "Futebol", "Sapato", "Chuva", "Sol", "Relógio", "Livro"
+        ];
+
+        // Estado Local do Usuário Atual
+        let meuId = '';
+        let meuNome = '';
+        let meuTime = 'blue'; // blue ou red
+        let meuPapel = 'player'; // player ou spy
+
+        // Telas do DOM
+        const loginScreen = document.getElementById('login-screen');
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const gameScreen = document.getElementById('game-screen');
+
+        // Elementos Interativos do Lobby
+        const btnLogin = document.getElementById('btn-login');
+        const btnTeamBlue = document.getElementById('btn-team-blue');
+        const btnTeamRed = document.getElementById('btn-team-red');
+        const btnRolePlayer = document.getElementById('btn-role-player');
+        const btnRoleSpy = document.getElementById('btn-role-spy');
+        const btnStartGame = document.getElementById('btn-start-game');
+
+        // 1. AÇÃO DE LOGIN (ENTRAR NO LOBBY)
+        btnLogin.addEventListener('click', () => {
+            meuNome = document.getElementById('player-name').value.trim();
+            if (!meuNome) return alert("Por favor, digite seu nome");
+
+            // Gerar um ID único simples baseado no tempo para esse jogador
+            meuId = 'p_' + Date.now();
+
+            // Envia os dados iniciais do jogador para o Firebase
+            atualizarMeuStatusNoLobby();
+
+            // Configurar para remover o jogador automaticamente se ele fechar a aba
+            onDisconnect(ref(db, `lobby/players/${meuId}`)).remove();
+
+            // Trocar de tela na interface
+            loginScreen.classList.add('hidden');
+            lobbyScreen.classList.remove('hidden');
+
+            // Iniciar ouvintes em tempo real do Firebase
+            initLobbyListeners();
+        });
+
+        // 2. MUDANÇAS DE TIME E CARGO DENTRO DO LOBBY
+        btnTeamBlue.addEventListener('click', () => { meuTime = 'blue'; alternarBotoes(btnTeamBlue, btnTeamRed, 'bg-blue-600'); atualizarMeuStatusNoLobby(); });
+        btnTeamRed.addEventListener('click', () => { meuTime = 'red'; alternarBotoes(btnTeamRed, btnTeamBlue, 'bg-red-600'); atualizarMeuStatusNoLobby(); });
+        btnRolePlayer.addEventListener('click', () => { meuPapel = 'player'; alternarBotoes(btnRolePlayer, btnRoleSpy, 'bg-indigo-600'); atualizarMeuStatusNoLobby(); });
+        btnRoleSpy.addEventListener('click', () => { meuPapel = 'spy'; alternarBotoes(btnRoleSpy, btnRolePlayer, 'bg-indigo-600'); atualizarMeuStatusNoLobby(); });
+
+        function alternarBotoes(ativo, inativo, classeCor) {
+            ativo.className = `py-2 rounded-lg font-bold border-2 border-transparent ${classeCor} text-white shadow-lg`;
+            inativo.className = "py-2 rounded-lg font-bold border-2 border-transparent bg-slate-800 text-slate-400";
+        }
+
+        function atualizarMeuStatusNoLobby() {
+            if (!meuId) return;
+            set(ref(db, `lobby/players/${meuId}`), {
+                name: meuNome,
+                team: meuTime,
+                role: meuPapel
+            });
+        }
+
+        // 3. ESCUTAR MUDANÇAS NO LOBBY E NO STATUS DO JOGO
+        function initLobbyListeners() {
+            // Escuta a lista de jogadores online e atualiza as colunas de times na UI
+            onValue(lobbyPlayersRef, (snapshot) => {
+                const players = snapshot.val() || {};
+                renderizarListaLobby(players);
+            });
+
+            // Escuta se o jogo foi iniciado por alguém
+            onValue(gameStatusRef, (snapshot) => {
+                const status = snapshot.val();
+                if (status === 'started') {
+                    // Muda para a tela do jogo se a partida começou
+                    lobbyScreen.classList.add('hidden');
+                    gameScreen.classList.remove('hidden');
+
+                    document.getElementById('display-role').textContent = `${meuTime === 'blue' ? 'Azul' : 'Vermelho'} - ${meuPapel === 'spy' ? 'Líder' : 'Jogador'}`;
+
+                    if (meuPapel === 'spy') {
+                        document.getElementById('clue-form').classList.remove('hidden');
+                    } else {
+                        document.getElementById('clue-form').classList.add('hidden');
+                    }
+
+                    escutarEstadoDoJogo();
+                } else {
+                    // Se o status voltar para 'waiting', volta para o lobby
+                    gameScreen.classList.add('hidden');
+                    lobbyScreen.classList.remove('hidden');
+                }
+            });
+        }
+
+        function renderizarListaLobby(players) {
+            const listBlue = document.getElementById('list-blue');
+            const listRed = document.getElementById('list-red');
+
+            listBlue.innerHTML = '';
+            listRed.innerHTML = '';
+
+            let countBlue = 0;
+            let countRed = 0;
+
+            Object.keys(players).forEach(id => {
+                const p = players[id];
+                const li = document.createElement('li');
+                li.className = "bg-slate-900 border border-slate-800/80 px-4 py-2.5 rounded-lg flex justify-between items-center";
+
+                // Tag visual se for o líder
+                const roleTag = p.role === 'spy' ? '<span class="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold"><i class="fa-solid fa-user-secret mr-1"></i>Líder</span>' : '';
+
+                li.innerHTML = `<span>${p.name} ${id === meuId ? '<small class="text-slate-500">(Você)</small>' : ''}</span> ${roleTag}`;
+
+                if (p.team === 'blue') {
+                    listBlue.appendChild(li);
+                    countBlue++;
+                } else {
+                    listRed.appendChild(li);
+                    countRed++;
+                }
+            });
+
+            document.getElementById('count-blue').textContent = `${countBlue} jogador(es)`;
+            document.getElementById('count-red').textContent = `${countRed} jogador(es)`;
+        }
+
+        // 4. INICIAR A PARTIDA (Gera as palavras e altera o status global)
+        btnStartGame.addEventListener('click', () => {
+            const embaralhadas = [...listaPalavras].sort(() => 0.5 - Math.random()).slice(0, 16);
+            const tipos = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'red', 'red', 'red', 'red', 'red', 'neutral', 'neutral', 'neutral', 'neutral', 'assassin'].sort(() => 0.5 - Math.random());
+
+            const cards = {};
+            embaralhadas.forEach((palavra, index) => {
+                cards[index] = { word: palavra, type: tipos[index], revealed: false };
+            });
+
+            // Salva a nova partida estruturada e muda o status para 'started' de uma vez só
+            set(gameStateRef, {
+                status: 'started',
+                cards: cards,
+                clueWord: "Nenhuma",
+                clueNum: "0"
+            });
+        });
+
+        // 5. SISTEMA DE JOGO EM ANDAMENTO
+        function escutarEstadoDoJogo() {
+            onValue(gameStateRef, (snapshot) => {
+                const state = snapshot.val();
+                if (!state || state.status !== 'started') return;
+
+                const board = document.getElementById('board');
+                board.innerHTML = '';
+
+                document.getElementById('clue-display').innerHTML = `<span class="text-amber-400 font-bold">${state.clueWord}</span> - Qtd: <span class="text-white font-bold">${state.clueNum}</span>`;
+
+                let blueRestantes = 0, redRestantes = 0;
+
+                Object.keys(state.cards).forEach(key => {
+                    const card = state.cards[key];
+                    if (!card.revealed && card.type === 'blue') blueRestantes++;
+                    if (!card.revealed && card.type === 'red') redRestantes++;
+
+                    const cardElement = document.createElement('button');
+                    cardElement.className = "rounded-xl p-4 flex items-center justify-center font-bold text-center border transition-all text-sm shadow-md break-all";
+
+                    if (card.revealed) {
+                        aplicarCores(cardElement, card.type, false);
+                        cardElement.disabled = true;
+                    } else {
+                        if (meuPapel === 'spy') {
+                            aplicarCores(cardElement, card.type, true); // Líder vê a cor com transparência
+                        } else {
+                            cardElement.className += " bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:scale-105 active:scale-95";
+                        }
+                    }
+
+                    cardElement.innerText = card.word;
+
+                    cardElement.addEventListener('click', () => {
+                        if (meuPapel === 'player' && !card.revealed) {
+                            update(ref(db, `game_state/cards/${id}`), { revealed: true }); // Corrige ID dinâmico da iteração
+                            update(ref(db, `game_state/cards/${key}`), { revealed: true });
+                            if (card.type === 'assassin') setTimeout(() => alert("💥 Clicaram no Assassino! Fim de jogo."), 100);
+                        }
+                    });
+
+                    board.appendChild(cardElement);
+                });
+
+                document.getElementById('score-blue').textContent = blueRestantes;
+                document.getElementById('score-red').textContent = redRestantes;
+            });
+        }
+
+        function aplicarCores(el, type, isSpyVisual) {
+            if (isSpyVisual) {
+                if (type === 'blue') el.className += " bg-slate-900 border-2 border-blue-500 text-blue-400";
+                if (type === 'red') el.className += " bg-slate-900 border-2 border-red-500 text-red-400";
+                if (type === 'neutral') el.className += " bg-slate-900 border border-slate-600 text-slate-500";
+                if (type === 'assassin') el.className += " bg-slate-900 border-2 border-amber-500 text-amber-500 font-black";
+            } else {
+                if (type === 'blue') el.className += " bg-blue-600 border-blue-500 text-white shadow-blue-900/50";
+                if (type === 'red') el.className += " bg-red-600 border-red-500 text-white shadow-red-900/50";
+                if (type === 'neutral') el.className += " bg-slate-600 border-slate-500 text-slate-300 line-through";
+                if (type === 'assassin') el.className += " bg-black border-slate-900 text-rose-600 animate-bounce";
+            }
+        }
+
+        // Formulário de Dicas (Líder)
+        document.getElementById('clue-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            update(gameStateRef, {
+                clueWord: document.getElementById('input-clue-word').value.trim(),
+                clueNum: document.getElementById('input-clue-num').value
+            });
+            document.getElementById('clue-form').reset();
+        });
+
+        // Botão de voltar pro Lobby (Cancela o jogo atual)
+        document.getElementById('btn-back-lobby').addEventListener('click', () => {
+            if (confirm("Deseja encerrar a partida atual e voltar ao lobby?")) {
+                set(gameStatusRef, 'waiting');
+            }
+        });
+    </script>
+</body>
+
+</html>
